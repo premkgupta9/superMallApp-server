@@ -1,15 +1,6 @@
- backend for super mall web application
- info about dependencies
- "dependencies": {
-    "cloudinary": "^1.41.0",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "mongoose": "^8.0.0",
-    "multer": "^1.4.5-lts.1"
-  }
-
+  # backend for super mall web application
+  # info about dependencies
+ 
   ## 1- Cloudinary 
   Cloudinary is a comprehensive cloud-based media management platform that empowers businesses to streamline the entire lifecycle of their digital media assets. Whether it's images, videos, or other rich media content, Cloudinary offers a robust set of tools and services to upload, optimize, transform, and deliver media across various web and mobile applications. 
 
@@ -71,3 +62,24 @@ Express.js, commonly referred to as Express, is a fast, minimalist, and flexible
 -Session Management and Cookie Parsing
 -Integration with Database Systems
 -Security Features
+
+### bcrypt
+bcrypt is a widely-used library for securely hashing passwords in Node.js applications. It is based on the Blowfish encryption algorithm and is specifically designed for securely storing passwords by incorporating a salt into the hashing process. This makes it a reliable choice for protecting user credentials from various security threats, including rainbow table attacks.
+
+# Key Features
+-Password Hashing
+-Salt Generation
+-Adaptive Work Factor
+-Ease of Use
+
+### jsonwebtoken
+jsonwebtoken is a Node.js library that enables the generation and verification of JSON Web Tokens (JWTs). JWTs are a compact and self-contained way of representing information between two parties. They are commonly used for authentication and authorization in web applications, providing a secure and stateless method for transmitting information between the client and server.
+
+# Key Features
+-JSON Web Tokens (JWT)
+-Token Signing and Verification
+-Expiration and Issued At Claims
+-Custom Claims
+-Stateless Authentication
+-Middleware Support
+-Cross-Platform Compatibility
