@@ -1,6 +1,8 @@
   # backend for super mall web application
   # info about dependencies
- 
+ ```
+ npm i cloudinary bcrypt cookie-parser cors dotenv express jsonwebtoken mongoose multer nodemon prettier
+ ```
   ## 1- Cloudinary 
   Cloudinary is a comprehensive cloud-based media management platform that empowers businesses to streamline the entire lifecycle of their digital media assets. Whether it's images, videos, or other rich media content, Cloudinary offers a robust set of tools and services to upload, optimize, transform, and deliver media across various web and mobile applications. 
 
