@@ -4,6 +4,5 @@ import { userRegister } from "../controllers/user.controller.js";
 
 const router = Router()
 
-router.route("/register").post(upload.single("avatar"), userRegister)
-
+router.post("/register", upload.single("avatar"), userRegister)
 export default router
