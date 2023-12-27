@@ -7,7 +7,11 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 const userRegister = asyncHandeler(async (req, res) => {
   const { email, phone, fullName, password } = req.body;
 
-  if ([email, phone, fullName, password].some((field) => !field || field.trim() === "")) {
+  if (
+    [email, phone, fullName, password].some(
+      (field) => !field || field.trim() === ""
+    )
+  ) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -24,7 +28,11 @@ const userRegister = asyncHandeler(async (req, res) => {
       email,
       phone,
       fullName,
-      password
+      password,
+      avatar: {
+        public_id: email,
+        secure_url: "avatar.img.url",
+      },
     });
 
     console.log("req.file:", req.file);
@@ -39,7 +47,9 @@ const userRegister = asyncHandeler(async (req, res) => {
     user.password = undefined;
     user.refreshToken = undefined;
 
-    res.status(201).json(new ApiResponse(201, user, "User registered successfully"));
+    res
+      .status(201)
+      .json(new ApiResponse(201, user, "User registered successfully"));
   } catch (error) {
     console.error("Error during user registration:", error);
     throw new ApiError(400, "Error during user registration");
@@ -47,4 +57,3 @@ const userRegister = asyncHandeler(async (req, res) => {
 });
 
 export { userRegister };
-
