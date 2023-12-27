@@ -7,6 +7,7 @@ const userSchema = new Schema(
     phone: {
       type: String,
       required: true,
+      unique: true,
     },
     email: {
       type: String,
@@ -32,11 +33,12 @@ const userSchema = new Schema(
     },
     avatar: {
       type: String, // cloudinary url
-      //   required: true,
+        // required: true,
     },
     password: {
       type: String,
       required: [true, "Password is required"],
+      match: [/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, 'Password must be contains at least one uppercase and one lowercase and one digit and one special character'],
     },
     refreshToken: {
       type: String,
@@ -63,7 +65,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      phone: this.phone,
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
