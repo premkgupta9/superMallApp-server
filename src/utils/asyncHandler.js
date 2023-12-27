@@ -10,4 +10,4 @@ const asyncHandeler = (fn) => async (req, res, next) => {
   }
 };
 
-export default asyncHandeler;
+export {asyncHandeler}
