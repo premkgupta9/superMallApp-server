@@ -23,7 +23,7 @@ const generateAccessAndRefereshTokens = async(userId) => {
 }
 
 const userRegister = asyncHandler(async (req, res) => {
-  const { email, phone, fullName, password } = req.body;
+  const { email, phone, fullName, password, role } = req.body;
 
   if ([email, phone, fullName, password].some((field) => !field || field.trim() === "")) {
     throw new ApiError(400, "All fields are required");
@@ -38,7 +38,6 @@ const userRegister = asyncHandler(async (req, res) => {
   }
 
   // console.log(req.file);
-
   const avatarLocalPath = req.file?.path;
 
   const avatar = await uploadOnCloudinary(avatarLocalPath)
@@ -48,6 +47,7 @@ const userRegister = asyncHandler(async (req, res) => {
     phone,
     fullName,
     password,
+    role,
     avatar: avatar?.url || "",
   });    
 
@@ -67,7 +67,7 @@ const userRegister = asyncHandler(async (req, res) => {
 const userLogin = asyncHandler(async(req, res) => {
       const { email , phone, password } = req.body
 
-      if (!email || !phone) {
+      if (!email && !phone) {
         throw new ApiError(400, "email or phone is required")
       }
   
@@ -109,7 +109,54 @@ const userLogin = asyncHandler(async(req, res) => {
     )
 })
 
-const userLogout = asyncHandler( async(req, res) => {
+const adminLogin = asyncHandler(async(req, res) => {
+  const { email , phone, password } = req.body
+
+  if (!email && !phone) {
+    throw new ApiError(400, "email or phone is required")
+  }
+
+ const user = await User.findOne({
+    $or: [{email}, {phone}]
+  })
+
+  if (!user) {
+    throw new ApiError(404,"User does not exist" )
+}
+if (user.role === "USER") {
+  throw new ApiError(400, "you are not allowed")
+}
+const isPasswordCorrect = await user.isPasswordCorrect(password)
+
+if (!isPasswordCorrect) {
+  throw new ApiError(401,"Password is wrong" )
+}
+
+const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
+
+const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+const options = {
+    httpOnly: true,
+    secure: true
+}
+
+return res
+.status(200)
+.cookie("accessToken", accessToken, options)
+.cookie("refreshToken", refreshToken, options)
+.json(
+    new ApiResponse(
+        200, 
+        {
+            user: loggedInUser, accessToken, refreshToken
+        },
+        "User logged In Successfully"
+    )
+)
+})
+
+const logout = asyncHandler( async(req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -209,37 +256,46 @@ const getUser = asyncHandler( async( req, res) => {
   ))
 })
 
-const updateAccontDetails = asyncHandler(async(req,res) => {
-  const {fullName, email} = req.body
+ const updateProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id).select("-refreshToken");
 
-  if (!fullName || !email) {
-      throw new ApiError(400, "All fields are required")
+  if (!user) {
+      throw new ApiError(404, "User does not exist");
   }
 
-  const user = await User.findByIdAndUpdate(
-      req.user?._id,
-      {
-          $set: {
-              fullName,
-              email: email
-          }
-      },
-      {new: true}
-      
-  ).select("-password")
+  const existingUser = await User.findOne({
+      $or: [
+          { email: req.body?.email },
+          { phone: req.body?.phone }
+          
+      ]
+  });
 
-  return res
-  .status(200)
-  .json(new ApiResponse(200, user, "Account details updated successfully"))
+  if (existingUser) {
+      if (existingUser.email === req.body?.email) {
+          throw new ApiError(400, "Email is already in use");
+      }
+      if (existingUser.phone === req.body?.phone) {
+          throw new ApiError(400, "phone is already in use");
+      }
+  }
+
+  for (const key in req.body) {
+      user[key] = req.body[key];
+  }
+ 
+  const updatedUser = await user.save();
+  res.status(200).json(new ApiResponse(200, updatedUser, "User updated successfully"));
 })
 
 export { 
   userRegister,
+  adminLogin,
   userLogin,
-  userLogout,
+  logout,
   refreshAccessToken,
   changePassword,
   getUser,
-  updateAccontDetails  
+  updateProfile
 };
 
